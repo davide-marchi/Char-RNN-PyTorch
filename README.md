@@ -6,9 +6,9 @@ Minimalist code for character-level language modelling using Multi-layer Recurre
 
 Trained and tested on:
 
-- `Python 3.6`
-- `PyTorch 1.0`
-- `NumPy 1.16.3`
+- `Python 3.12`
+- `PyTorch 2.3.0`
+- `NumPy 1.26.4`
 
 ## Usage
 
