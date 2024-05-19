@@ -15,9 +15,6 @@ def test():
     
     load_path = "./preTrained/CharRNN_reviews.pth"
     data_path = "./data/reviews.txt"
-    
-#    load_path = "./preTrained/CharRNN_sherlock.pth"
-#    data_path = "./data/sherlock.txt"
     #########################################
     
     # load the text file
