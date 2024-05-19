@@ -63,15 +63,16 @@ def test(temperature=1.0):
     # generate remaining sequence
     print("----------------------------------------")
     while True:
-        # forward pass
+
+        # Forward pass
         output, hidden_state = rnn(input_seq, hidden_state)
         
-        # construct categorical distribution and sample a character
+        # Construct categorical distribution and sample a character
         output = F.softmax(torch.squeeze(output) / temperature, dim=0)
         dist = Categorical(output)
         index = dist.sample().item()
         
-        # print the sampled character
+        # Print the sampled character
         print(ix_to_char[index], end='')
         
         # next input is current output

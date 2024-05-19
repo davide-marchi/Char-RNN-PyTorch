@@ -3,11 +3,11 @@ import re
 
 def convert_and_save_to_txt(data, file_path):
 
+    # Remove everything that's not a letter, a number, basic punctuation, or a money symbol
     reviews = data.str.encode('UTF-8', 'ignore').str.decode('UTF-8')
-
-    # Remove everything that's not a letter, a number, basic punctuation, or dollar symbol
     reviews = reviews.apply(lambda x: re.sub(r'[^a-zA-Z0-9$€£.,!? ]', '', x))
 
+    # Save the reviews to a text file
     with open(file_path, 'w') as file:
         for review in reviews:
             file.write(review + '\n')
