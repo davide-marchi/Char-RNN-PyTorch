@@ -10,6 +10,7 @@ def test():
     ############ Hyperparameters ############
     hidden_size = 512   # size of hidden state
     num_layers = 3      # num of layers in LSTM layer stack
+    dropout_rate = 0.2  # dropout rate
     op_seq_len = 1000   # total num of characters in output test sequence
     
     load_path = "./preTrained/CharRNN_shakespeare.pth"
@@ -41,8 +42,9 @@ def test():
     data = torch.unsqueeze(data, dim=1)
     
     # create and load model instance
-    rnn = RNN(vocab_size, vocab_size, hidden_size, num_layers).to(device)
+    rnn = RNN(vocab_size, vocab_size, hidden_size, num_layers, dropout_rate).to(device)
     rnn.load_state_dict(torch.load(load_path))
+    rnn.eval()
     print("Model loaded successfully !!")
     
     # initialize variables

@@ -7,15 +7,17 @@ import numpy as np
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class RNN(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size, num_layers):
+    def __init__(self, input_size, output_size, hidden_size, num_layers, dropout_rate):
         super(RNN, self).__init__()
         self.embedding = nn.Embedding(input_size, input_size)
         self.rnn = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=num_layers)
+        self.dropout = nn.Dropout(dropout_rate)
         self.decoder = nn.Linear(hidden_size, output_size)
     
     def forward(self, input_seq, hidden_state):
         embedding = self.embedding(input_seq)
         output, hidden_state = self.rnn(embedding, hidden_state)
+        output = self.dropout(output)
         output = self.decoder(output)
         return output, (hidden_state[0].detach(), hidden_state[1].detach())
     
@@ -24,12 +26,13 @@ def train():
     hidden_size = 512   # size of hidden state
     seq_len = 100       # length of LSTM sequence
     num_layers = 3      # num of layers in LSTM layer stack
+    dropout_rate = 0.2  # dropout rate
     lr = 0.002          # learning rate
     epochs = 100        # max number of epochs
     op_seq_len = 200    # total num of characters in output test sequence
     load_chk = False    # load weights from save_path directory to continue training
-    save_path = "./preTrained/CharRNN_shakespeare.pth"
-    data_path = "./data/shakespeare.txt"
+    save_path = "./preTrained/CharRNN_reviews.pth"
+    data_path = "./data/reviews.txt"
     #######################################
     
     # load the text file
@@ -54,7 +57,7 @@ def train():
     data = torch.unsqueeze(data, dim=1)
     
     # model instance
-    rnn = RNN(vocab_size, vocab_size, hidden_size, num_layers).to(device)
+    rnn = RNN(vocab_size, vocab_size, hidden_size, num_layers, dropout_rate).to(device)
     
     # load checkpoint if True
     if load_chk:
@@ -110,8 +113,12 @@ def train():
         # random character from data to begin
         rand_index = np.random.randint(data_size-1)
         input_seq = data[rand_index : rand_index+1]
-        
+
         print("----------------------------------------")
+
+        # enter in evaluation mode to stop the dropout
+        rnn.eval()
+
         while True:
             # forward pass
             output, hidden_state = rnn(input_seq, hidden_state)
@@ -130,6 +137,9 @@ def train():
             
             if data_ptr > op_seq_len:
                 break
+
+        # enter in train mode to reactivate the dropout
+        rnn.train()
             
         print("\n----------------------------------------")
         
