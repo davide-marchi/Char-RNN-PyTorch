@@ -8,13 +8,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def test():
     ############ Hyperparameters ############
-    hidden_size = 512   # size of hidden state
+    hidden_size = 256   # size of hidden state
     num_layers = 3      # num of layers in LSTM layer stack
-    dropout_rate = 0.2  # dropout rate
+    dropout_rate = 0.3  # dropout rate
     op_seq_len = 1000   # total num of characters in output test sequence
     
-    load_path = "./preTrained/CharRNN_shakespeare.pth"
-    data_path = "./data/shakespeare.txt"
+    load_path = "./preTrained/CharRNN_reviews.pth"
+    data_path = "./data/reviews.txt"
     
 #    load_path = "./preTrained/CharRNN_sherlock.pth"
 #    data_path = "./data/sherlock.txt"

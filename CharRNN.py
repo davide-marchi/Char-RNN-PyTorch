@@ -23,12 +23,12 @@ class RNN(nn.Module):
     
 def train():
     ########### Hyperparameters ###########
-    hidden_size = 512   # size of hidden state
+    hidden_size = 256   # size of hidden state
     seq_len = 100       # length of LSTM sequence
     num_layers = 3      # num of layers in LSTM layer stack
-    dropout_rate = 0.2  # dropout rate
+    dropout_rate = 0.3  # dropout rate
     lr = 0.002          # learning rate
-    epochs = 100        # max number of epochs
+    epochs = 1        # max number of epochs
     op_seq_len = 200    # total num of characters in output test sequence
     load_chk = False    # load weights from save_path directory to continue training
     save_path = "./preTrained/CharRNN_reviews.pth"
