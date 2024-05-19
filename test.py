@@ -6,15 +6,15 @@ from CharRNN import RNN
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def test():
+def test(temperature=1.0):
     ############ Hyperparameters ############
-    hidden_size = 256   # size of hidden state
+    hidden_size = 128   # size of hidden state
     num_layers = 3      # num of layers in LSTM layer stack
-    dropout_rate = 0.3  # dropout rate
+    dropout_rate = 0.2  # dropout rate
     op_seq_len = 1000   # total num of characters in output test sequence
     
-    load_path = "./preTrained/CharRNN_reviews.pth"
-    data_path = "./data/reviews.txt"
+    load_path = "./preTrained/CharRNN_reviews_" + str(hidden_size) + "_"+ str(num_layers) + "_" + str(dropout_rate) + ".pth"
+    data_path = "./data/ts_reviews.txt"
     #########################################
     
     # load the text file
@@ -58,6 +58,8 @@ def test():
     # next element is the input to rnn
     input_seq = data[rand_index + 9 : rand_index + 10]
     
+    print("Temperature: ", temperature)
+
     # generate remaining sequence
     print("----------------------------------------")
     while True:
@@ -65,7 +67,7 @@ def test():
         output, hidden_state = rnn(input_seq, hidden_state)
         
         # construct categorical distribution and sample a character
-        output = F.softmax(torch.squeeze(output), dim=0)
+        output = F.softmax(torch.squeeze(output) / temperature, dim=0)
         dist = Categorical(output)
         index = dist.sample().item()
         
@@ -83,4 +85,7 @@ def test():
    
 if __name__ == '__main__':
     test()
-
+    test(temperature=0.1)
+    test(temperature=0.5)
+    test(temperature=0.6)
+    test(temperature=10)
