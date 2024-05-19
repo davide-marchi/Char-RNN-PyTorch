@@ -88,7 +88,7 @@ def validate(hidden_size=256, num_layers=3, dropout_rate=0.2, data_path="./data/
     print("Validation Loss: {0:.8f}".format(running_loss/n))
     return running_loss/n
 
-def train(hidden_size=256, num_layers=3, dropout_rate=0.2, device="cuda:0"):
+def train(hidden_size=256, num_layers=3, dropout_rate=0.2, device=device):
     ########### Hyperparameters ###########
     #hidden_size = 256   # size of hidden state
     seq_len = 100       # length of LSTM sequence
