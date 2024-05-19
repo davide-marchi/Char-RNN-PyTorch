@@ -20,19 +20,86 @@ class RNN(nn.Module):
         output = self.dropout(output)
         output = self.decoder(output)
         return output, (hidden_state[0].detach(), hidden_state[1].detach())
+
+def validate(hidden_size=256, num_layers=3, dropout_rate=0.2, data_path="./data/vl_reviews.txt"):
+    # load the text file
     
-def train():
+    data = open(data_path, 'r').read()
+    chars = sorted(list(set(data)))
+    data_size, vocab_size = len(data), len(chars)
+    print("----------------------------------------")
+    print("Validation Data has {} characters, {} unique".format(data_size, vocab_size))
+    print("----------------------------------------")
+    
+    # char to index and index to char maps
+    char_to_ix = { ch:i for i,ch in enumerate(chars) }
+    ix_to_char = { i:ch for i,ch in enumerate(chars) }
+    
+    # convert data from chars to indices
+    data = list(data)
+    for i, ch in enumerate(data):
+        data[i] = char_to_ix[ch]
+    
+    # data tensor on device
+    data = torch.tensor(data).to(device)
+    data = torch.unsqueeze(data, dim=1)
+    
+    # model instance
+    rnn = RNN(vocab_size, vocab_size, hidden_size, num_layers, dropout_rate).to(device)
+    
+    # load checkpoint
+    save_path = "./preTrained/CharRNN_reviews_" + str(hidden_size) + "_"+ str(num_layers) + "_" + str(dropout_rate) + ".pth"
+    rnn.load_state_dict(torch.load(save_path))
+    rnn.eval()
+    print("Model loaded successfully !!")
+    print("----------------------------------------")
+    
+    # loss function
+    loss_fn = nn.CrossEntropyLoss()
+    
+    # validation loop
+    data_ptr = 0
+    seq_len = 100
+    running_loss = 0
+    n = 0
+    hidden_state = None
+
+    while True:
+        input_seq = data[data_ptr : data_ptr+seq_len]
+        target_seq = data[data_ptr+1 : data_ptr+seq_len+1]
+        
+        # forward pass
+        output, hidden_state = rnn(input_seq, hidden_state)
+        
+        # compute loss
+        loss = loss_fn(torch.squeeze(output), torch.squeeze(target_seq))
+        running_loss += loss.item()
+        
+        # update the data pointer
+        data_ptr += seq_len
+        n +=1
+        
+        # if at end of data : break
+        if data_ptr + seq_len + 1 > data_size:
+            break
+
+    rnn.train()
+
+    print("Validation Loss: {0:.8f}".format(running_loss/n))
+    return running_loss/n
+
+def train(hidden_size=256, num_layers=3, dropout_rate=0.2):
     ########### Hyperparameters ###########
-    hidden_size = 256   # size of hidden state
+    #hidden_size = 256   # size of hidden state
     seq_len = 100       # length of LSTM sequence
-    num_layers = 3      # num of layers in LSTM layer stack
-    dropout_rate = 0.3  # dropout rate
+    #num_layers = 3      # num of layers in LSTM layer stack
+    #dropout_rate = 0.2  # dropout rate
     lr = 0.002          # learning rate
     epochs = 1        # max number of epochs
     op_seq_len = 200    # total num of characters in output test sequence
     load_chk = False    # load weights from save_path directory to continue training
-    save_path = "./preTrained/CharRNN_reviews.pth"
-    data_path = "./data/reviews.txt"
+    save_path = "./preTrained/CharRNN_reviews_" + str(hidden_size) + "_"+ str(num_layers) + "_" + str(dropout_rate) + ".pth"
+    data_path = "./data/tr_reviews.txt"
     #######################################
     
     # load the text file
