@@ -48,5 +48,4 @@ print(f"Best dropout rate: {best_dropout_rate}")
 # Validate the best model
 ts_loss = validate(best_hidden_size, best_num_layers, best_dropout_rate, './data/ts_reviews.txt')
 print(f'Test loss for the best model: {ts_loss}')
-# OUT: Validation Loss: 1.25895782
 # OUT: Test loss for the best model: 1.2589578165031023
