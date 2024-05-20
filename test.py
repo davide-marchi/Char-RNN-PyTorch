@@ -85,8 +85,8 @@ def test(temperature=1.0):
     print("\n----------------------------------------")
    
 if __name__ == '__main__':
-    test()
-    test(temperature=0.1)
-    test(temperature=0.5)
-    test(temperature=0.6)
-    test(temperature=10)
+    
+    for temperature in np.arange(0.1, 2.1, 0.1):
+        test(temperature=temperature)
+
+    test(temperature=5)
